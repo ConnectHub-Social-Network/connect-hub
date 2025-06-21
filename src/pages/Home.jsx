@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchPosts } from '../store/postSlice';  
-import PostCard from './Postcard';
+import PostCard from '../components/Postcard';
 
 function Feed() {
   const dispatch = useDispatch();
