@@ -1,134 +1,143 @@
-import axios from "axios";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { BASE_URL } from  "../baseUrl";
+import axios from "axios";
+import { BASE_URL } from "../baseUrl";
 
-axios.defaults.withCredentials = true;
+// Helper function to get the authorization header
+const getAuthHeader = () => {
+  const token = localStorage.getItem("authToken");
+  return {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+};
 
-//check if the User authencticated/signin
-export const checkAuthStatus = createAsyncThunk (
-   "auth/checkAuthStatus",
-   async () => {
-    try{
-    const response = await axios.get(`${BASE_URL}/auth/me`);
-     return response.data.User
+//Check authentication status
+export const checkAuthStatus = createAsyncThunk(
+  "auth/checkAuthStatus",
+  async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/users/me`, getAuthHeader());
+      return response.data;
     } catch (error) {
-        throw err
+      throw new Error(error.response?.data?.error || "Unauthorized");
     }
-   }
-    
-    
+  }
 );
 
-// Register user 
-export const registerUser = createAsyncThunk (
-    "auth/registerUser",
-    async(userData)=> {
-        try{
-      const response = await axios.post(`${BASE_URL}/auth/register`,userData)
-        return response.data.Userser;
-        } catch(error) {
-          if(error.response?.data?.error) {
-            throw new Error(error.response.data.error);
-          }
-           throw error;
-        }
+//Register user
+export const registerUser = createAsyncThunk(
+  "auth/registerUser",
+  async (userData) => {
+    try {
+      const response = await axios.post(`${BASE_URL}/auth/register`, userData);
+      const { token } = response.data;
+      localStorage.setItem("authToken", token);
+      const me = await axios.get(`${BASE_URL}/users/me`, getAuthHeader());
+      return me.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || "Registration failed");
     }
-)
+  }
+);
 
-// Lognin user
+// Login user
 export const loginUser = createAsyncThunk(
-    "auth/loginUser",
-    async(userData)=>{
-
-        try{
-       const response = await axios.post(`${BASE_URL}/auth/login`,userData);
-        return response.data.user
-        }catch(error){
-            if (error.response?.data?.error){
-                throw new Error(error.response.data.error);
-            }
-            throw error;
-        }
+  "auth/loginUser",
+  async (userData) => {
+    try {
+      const response = await axios.post(`${BASE_URL}/auth/login`, userData);
+      const { token } = response.data;
+      localStorage.setItem("authToken", token);
+      const me = await axios.get(`${BASE_URL}/users/me`, getAuthHeader());
+      return me.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.error || "Login failed");
     }
-)
+  }
+);
 
 // Logout user
- export const LogoutUser = createAsyncThunk(
-    "auth/LogoutUser",
-    async() => {
-        await axios.post(`${BASE_URL}/auth/LogoutUser`);
-    }
-
- )
+const logoutUser = createAsyncThunk("auth/logoutUser", async () => {
+  localStorage.removeItem("authToken");
+});
 
 const initialState = {
-    isAuthenticated: false,
-    User:null,
-    status:"idle",
-    error:null
-}
+  isAuthenticated: !!localStorage.getItem("authToken"),
+  user: null,
+  status: "idle",
+  error: null,
+};
 
-const AuthSlice = createSlice ({
-    name:"auth",
-    initialState: initialState,
-    extraReducers: (builder) => {
-        
-        //checkAutStatus
-         builder
-         .addCase(checkAuthStatus.pending, (state)=>{
-            state.status= "loading,"
-         })
-         .addCase(checkAuthStatus.fulfilled, (state, action)=>{
-            state.status= "succeeded",
-            state.isAuthenticated= true,
-            state.User= action.payload
-            state.error= false
+const authSlice = createSlice({
+  name: "auth",
+  initialState,
+  reducers: {
+    clearError: (state) => {
+      state.error = null;
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      // Check Auth
+      .addCase(checkAuthStatus.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(checkAuthStatus.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.isAuthenticated = true;
+        state.user = action.payload;
+        state.error = null;
+      })
+      .addCase(checkAuthStatus.rejected, (state, action) => {
+        state.status = "idle";
+        state.isAuthenticated = false;
+        state.user = null;
+        state.error = action.error.message;
+      })
 
-         })
-         .addCase(checkAuthStatus.rejected, (state)=>{
-            state.status= "failed",
-            state.isAuthenticated= false,
-            state.error= null
-         })
-         //Register cases
-         .addCase(registerUser.pending, (state)=>{
-            state.stuts= "loading",
-            state.error=null
-            
-         })
-         .addCase(registerUser.fulfilled,(state, action)=> {
-            state.status= "succeeded",
-            state.isAuthenticated= true,
-            state.User= action.payload
-            state.error=null
-         })
-         .addCase(registerUser.rejected, (state,action)=>{
-            state.status= "failed",
-            state.error= action.error.message
-         })
-         // Login cases
-         .addCase(loginUser.pending, (state)=>{
-            state.stuts= "loading",
-            state.error=null
-            
-         })
-         .addCase(loginUser.fulfilled,(state, action)=> {
-            state.status= "succeeded",
-            state.isAuthenticated= true,
-            state.User= action.payload
-            state.error=null
-         })
-         .addCase(loginUser.rejected, (state,action)=>{
-            state.status= "failed",
-            state.error= action.error.message
-         })
-         .addCase(LogoutUser.fulfilled, (state)=> {
-            state.status= "idle",
-            state.isAuthenticated= false,
-            state.User=null
-            state.error= null
-         })
-    }
-})
+      // Register
+      .addCase(registerUser.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(registerUser.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.isAuthenticated = true;
+        state.user = action.payload;
+        state.error = null;
+      })
+      .addCase(registerUser.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
+      })
 
-export default AuthSlice.reducer;
+      // Login
+      .addCase(loginUser.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(loginUser.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.isAuthenticated = true;
+        state.user = action.payload;
+        state.error = null;
+      })
+      .addCase(loginUser.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
+      })
+
+      // Logout
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.status = "idle";
+        state.isAuthenticated = false;
+        state.user = null;
+        state.error = null;
+      });
+  },
+});
+
+export const { clearError } = authSlice.actions;
+export { logoutUser }; 
+export default authSlice.reducer;
