@@ -1,85 +1,151 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import {BASE_URL} from "../baseUrl";
 import axios from "axios";
+import { BASE_URL } from "../baseUrl";
 
 
-const fetchPosts = createAsyncThunk(
-  "posts/fectchPosts",
+axios.defaults.withCredentials = true;
 
-  async() => {
-    const response = await axios.get (`${BASE_URL}/posts/feed`);
-     return response.data
+// fetch posts + fetch user info for each post
+export const fetchPostsWithUsers = createAsyncThunk(
+  "posts/fetchPostsWithUsers",
+  async (_, thunkAPI) => {
+    try {
+      const token = localStorage.getItem("authToken");
+
+      // Fetch posts feed
+      const postsResponse = await axios.get(`${BASE_URL}/posts/feed`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      //console.log("postsResponse.data", postsResponse.data);
+
+      const posts = postsResponse.data;
+
+      // Extract unique userIds from posts
+      const userIds = [...new Set(posts.map((post) => post.userId))];
+
+      // Fetch each user's info concurrently
+      const userRequests = userIds.map((id) =>
+        axios
+          .get(`${BASE_URL}/users/${id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+          .then((res) => res.data)
+      );
+
+      const users = await Promise.all(userRequests);
+
+      // Create a map userId => user
+      const userMap = {};
+      users.forEach((user) => {
+        userMap[user.id] = user;
+      });
+
+      // Attach user info to each post
+      const postsWithUsers = posts.map((post) => ({
+        ...post,
+        user: userMap[post.userId] || { name: "User Not Found" }
+      }));
+
+      return postsWithUsers;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.error || error.message
+      );
+    }
   }
-)
+);
 
-const IntialState = {
-    posts: [],
-    status: "idle", // "loading" , "succeeded", "failed",
-    error: null,
-}
+// Create a new post 
+export const createPost = createAsyncThunk(
+  "posts/createPost",
+  async (postData, thunkAPI) => {
+    try {
+      const token = localStorage.getItem("authToken");
+
+      const formData = new FormData();
+      formData.append("text", postData.text);
+      if (postData.image) {
+        formData.append("image", postData.image);
+      }
+      const response = await axios.post(`${BASE_URL}/posts`,  formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+         
+        },
+      });
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.error || error.message
+      );
+    }
+  }
+);
+
+// Initial state for the post slice
+const initialState = {
+  posts: [],
+  status: "idle",
+  error: null,
+
+  createPostForm: {
+    text: "",
+    image: null,
+    preview: null,
+  },
+};
 
 const postSlice = createSlice({
-    name: 'posts',
-    initialState: IntialState,
-    extraReducers: (builder) => {
-        builder
-         .addCase(fetchPosts.pending, (state) =>{
-            state.status= "loading"
-         })
-         .addCase(fetchPosts.fulfilled,(state, action) =>{
-            state.status="succeeded",
-            state.posts= action.payload
-            state.error= null
-         })
-         .addCase(fetchPosts.rejected, (state,action) =>{
-            state.status = "failed",
-            state.error= action.error.message
-         })
-    }
-})
+  name: "posts",
+  initialState,
+  reducers: {
+    updatePostText: (state, action) => {
+      state.createPostForm.text = action.payload;
+    },
+    updatePostImage: (state, action) => {
+      
+      state.createPostForm.preview = action.payload.preview;
+    },
+    resetCreatePostForm: (state) => {
+      state.createPostForm = { text: "", image: null, preview: null };
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      // Fetch Posts with user info
+      .addCase(fetchPostsWithUsers.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(fetchPostsWithUsers.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.posts = action.payload;
+      })
+      .addCase(fetchPostsWithUsers.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload || action.error.message;
+      })
+
+      // Create Post
+      .addCase(createPost.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(createPost.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.posts.unshift(action.payload);
+        state.error = null;
+      })
+      .addCase(createPost.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload || action.error.message;
+      });
+  },
+});
+
+export const { updatePostText, updatePostImage, resetCreatePostForm } =
+  postSlice.actions;
 
 export default postSlice.reducer;
-
-// import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-// // import { baseURL } from './baseUrl';
-// import {placeholder} from '../placeholders/placeholder'
-
-// const initialState = {
-//   posts: placeholder,
-//   loading: false,
-//   error: null,
-// };
-// export const fetchPosts = createAsyncThunk(
-//   'posts/fetchPosts',
-//   async (_, thunkAPI) => {
-//     try {
-//         await new Promise(r => setTimeout(r, 500));
-//         return placeholder;  
-//           } catch (err) {
-//             return thunkAPI.rejectWithValue(err.message);
-//         }
-
-// });
-// const postSlice = createSlice({
-//     name: 'posts',
-//     initialState,
-//     reducers: {},
-//     extraReducers: (builder) => {
-//         builder
-//         .addCase(fetchPosts.pending, (state) => {
-//             state.loading = true;
-//             state.error = null;
-//         })
-//         .addCase(fetchPosts.fulfilled, (state, action) => {
-//         state.loading = false;
-//         state.posts = action.payload;
-//         })
-//         .addCase(fetchPosts.rejected, (state, action) => {
-//         state.loading = false;
-//         state.error = action.payload;
-//         });
-//     },
-// });
-
-// export default postSlice.reducer;
-

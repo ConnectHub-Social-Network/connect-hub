@@ -1,84 +1,100 @@
-// import {  useEffect } from 'react'
-// import { useDispatch, useSelector } from 'react-redux';
-// import './index.css'
-// import Postcard from './components/Postcard'
-// import { fetchPosts } from './store/postSlice';
+import React, { useEffect } from "react";
+import { Routes, Route } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { Navigate } from "react-router-dom";
 
-// function App() {
-//   const dispatch = useDispatch();
-//   const { posts, loading, error } = useSelector((state) => state.posts);
-
-//   useEffect(() => {
-//     dispatch(fetchPosts());
-//   }, [dispatch]);
-
-//   if (loading) return <div>Loading posts...</div>;
-//   if (error) return <div>Error: {error}</div>;
-
-//   return (
-//     <div className="app-container p-4 max-w-2xl mx-auto">
-//       <h1 className="text-2xl font-bold mb-4">Home</h1>
-//       {posts.length === 0 && <p>No posts to show.</p>}
-
-//       {posts.map((post) => (
-//         <Postcard key={post.id} post={post} />
-//       ))}
-//     </div>
-//   )
-// }
-
-// export default App
-
-import HomePage from "./pages/Feed.jsx";
+import Home from "./pages/Home.jsx";
 import RegistrationPage from "./pages/registrationPage.jsx";
-import { Route, Routes } from 'react-router-dom';
-import SigninForm from './pages/signInform.jsx';
+import Signin from "./pages/SignForm.jsx";
 import ProtectedRoutes from "./components/auth/ProtectRoutes.jsx";
-import Feed from "./pages/Feed.jsx";
-import ProfilePage from "./profile/ProfilePage.jsx";
+import CreatePostPage from "./pages/CreatePostPage.jsx";
+import NotificationPage from "./pages/NotificationsPage.jsx";
+import SearchPage from "./pages/SearchsPage.jsx";
+import ProfilePage from "./pages/ProfilePage.jsx";
+import Header from "./components/layout/Header.jsx";
 
-
-
+import { checkAuthStatus } from "./store/Slices/AuthSlices";
 
 function App() {
+  const dispatch = useDispatch();
   
-  return(
-    
-    <div className='flex flex-col min-h-screen'>
-      <>
-      <main >
-        <Routes>
-        
-        <Route path="/" element={<HomePage/>}/> 
-        <Route path="/Feed" element={
-        <ProtectedRoutes requireAuth={true}>
-        <Feed/>
-        </ProtectedRoutes>
-        }/>
-          <Route path="/ProfilePage" element={
-            <ProtectedRoutes requireAuth={true}>
-            <ProfilePage/>
-            </ProtectedRoutes>
-            }></Route>
-        <Route path="/ResgistrationPage" element={
-          <ProtectedRoutes requireAuth={false}>
-          <RegistrationPage/>
-          </ProtectedRoutes>
-          }/>
-        <Route path='/signinForm' element={
-          <ProtectedRoutes requireAuth={false} >
-          <SigninForm/>
-            </ProtectedRoutes>
-          }></Route>
+  useEffect(() => {
+    dispatch(checkAuthStatus());
+  }, [dispatch]);
 
-        
-        
-       </Routes>
-       </main>
-      </>
+  return (
+    <div className="flex flex-col min-h-screen">
+      <Header />
+      <main className="pt-16">
+        <Routes>
+
+          <Route
+            path="/"
+            element={
+              <ProtectedRoutes requireAuth={true}>
+                <Home />
+              </ProtectedRoutes>
+            }
+          />
+
+          <Route
+            path="/create-post"
+            element={
+              <ProtectedRoutes requireAuth={true}>
+                <CreatePostPage />
+              </ProtectedRoutes>
+            }
+          />
+          <Route
+            path="/notifications"
+            element={
+              <ProtectedRoutes requireAuth={true}>
+                <NotificationPage />
+              </ProtectedRoutes>
+            }
+          />
+          <Route
+            path="/search"
+            element={
+              <ProtectedRoutes requireAuth={true}>
+                <SearchPage />
+              </ProtectedRoutes>
+            }
+          />
+          
+
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoutes requireAuth={true}>
+                <ProfilePage />
+              </ProtectedRoutes>
+            }
+          />
+
+          <Route
+            path="/register"
+            element={
+              <ProtectedRoutes requireAuth={false}>
+                <RegistrationPage />
+              </ProtectedRoutes>
+            }
+          />
+
+          <Route
+            path="/signin"
+            element={
+              <ProtectedRoutes requireAuth={false}>
+                <Signin />
+              </ProtectedRoutes>
+            }
+          >
+          
+          </Route>
+        </Routes>
+      </main>
     </div>
-    
-  )
+  );
 }
 
-export default App
+export default App;
