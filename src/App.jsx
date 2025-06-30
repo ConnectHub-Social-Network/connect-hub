@@ -15,6 +15,7 @@ import Header from "./components/layout/Header.jsx";
 
 import { checkAuthStatus } from "./store/Slices/AuthSlices";
 
+
 function App() {
   const dispatch = useDispatch();
   
@@ -25,6 +26,7 @@ function App() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
+    
       <main className="pt-16">
         <Routes>
 

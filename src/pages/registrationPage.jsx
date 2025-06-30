@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import { registerUser, clearError } from "../store/Slices/AuthSlices";
+import { useForm } from "react-hook-form";
 
 const registerSchema = z.object({
   name: z.string().min(1, "Name is required"),

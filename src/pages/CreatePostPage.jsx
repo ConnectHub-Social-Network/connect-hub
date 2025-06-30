@@ -9,6 +9,10 @@ import {
 import { Loader2, Image as ImageIcon } from "lucide-react";
 import Sidebar from "../components/layout/Sidebar";
 import { useState } from "react";
+import UploadImages from "./UploadImages";
+import CloudinaryUploadWidget from '../components/cloudinaryUploadWidget';
+import { AdvancedImage, responsive, placeholder } from '@cloudinary/react';
+import { Cloudinary } from '@cloudinary/url-gen';
 
 function CreatePostPage() {
 
@@ -19,6 +23,37 @@ function CreatePostPage() {
   const [Preview, setImagePreview] = useState(null);
 
   const charLimit = 280;
+
+  const cloudName = 'doa9xmvsa';
+  const uploadPreset = 'connecthub';
+
+   const [publicId, setPublicId] = useState('')
+
+ const cld = new Cloudinary({
+    cloud: {
+      cloudName,
+    },
+  });
+
+    // Upload Widget Configuration
+
+ const uwConfig = {
+    cloudName,
+    uploadPreset,
+    // Uncomment and modify as needed:
+    // cropping: true,
+    // showAdvancedOptions: true,
+    // sources: ['local', 'url'],
+    // multiple: false,
+    // folder: 'user_images',
+    // tags: ['users', 'profile'],
+    // context: { alt: 'user_uploaded' },
+    // clientAllowedFormats: ['images'],
+    // maxImageFileSize: 2000000,
+    // maxImageWidth: 2000,
+    // theme: 'purple',
+  };
+  
 
   // Handle image input change
   const handleImageChange = (e) => {
@@ -34,8 +69,8 @@ function CreatePostPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!createPostForm.text.trim()) return;
-
-    dispatch(createPost({ text: createPostForm.text, image: imageFile }))
+const imageUrl = publicId ? cld.image(publicId).toURL() : "";
+    dispatch(createPost({ text: createPostForm.text, image: imageUrl }))
       .unwrap()
       .then(() => {
         dispatch(resetCreatePostForm());
@@ -49,6 +84,7 @@ function CreatePostPage() {
   return (
     <div className="flex flex-row mt-10">
       <Sidebar />
+      
       <div className="max-w-xl mx-auto p-4 w-full">
         <form
           onSubmit={handleSubmit}
@@ -71,7 +107,7 @@ function CreatePostPage() {
               required
             />
           </div>
-
+      
           {Preview && (
             <div className="relative">
               <img
@@ -84,15 +120,8 @@ function CreatePostPage() {
 
           <div className="flex items-center justify-between border-t pt-3">
             <label className="flex items-center gap-2 cursor-pointer text-blue-600 hover:text-blue-800">
-              <ImageIcon className="w-5 h-5" />
-              <span className="text-sm">Add image</span>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="hidden"
-                disabled={status === "loading"}
-              />
+              
+              <CloudinaryUploadWidget uwConfig={uwConfig} setPublicId={setPublicId} />
             </label>
 
             <div className="flex items-center gap-4">
@@ -120,6 +149,18 @@ function CreatePostPage() {
           )}
         </form>
       </div>
+      {publicId && (
+        <div
+          className="image-preview"
+          style={{ width: '800px', margin: '20px auto' }}
+        >
+          <AdvancedImage
+            style={{ maxWidth: '100%' }}
+            cldImg={cld.image(publicId)}
+            plugins={[responsive(), placeholder()]}
+          />
+        </div>
+      )}
     </div>
   );
 }
