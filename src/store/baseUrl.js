@@ -1,2 +1,2 @@
-export const  BASE_URL = "https://connecthub-three.vercel.app/api";
+export const  BASE_URL = "/api";
 //https://connecthub-three.vercel.app

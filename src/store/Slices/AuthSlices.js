@@ -8,9 +8,22 @@ const getAuthHeader = () => {
   return {
     headers: {
       Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
     },
   };
 };
+
+
+// Helper function to get the authorization header
+// const getAuthHeader = () => {
+//   const token = localStorage.getItem("authToken");
+//   return {
+//     headers: {
+//       Authorization: `Bearer ${token}`,
+//     },
+//   };
+// };
 
 //Check authentication status
 export const checkAuthStatus = createAsyncThunk(
@@ -30,11 +43,26 @@ export const registerUser = createAsyncThunk(
   "auth/registerUser",
   async (userData) => {
     try {
-      const response = await axios.post(`${BASE_URL}/auth/register`, userData);
+      console.log("USERDATA", userData);
+      const response = await axios.post(`${BASE_URL}/auth/register`, userData, {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        withCredentials: false,
+      });
+      console.log("response", response);
       const { token } = response.data;
       localStorage.setItem("authToken", token);
-      const me = await axios.get(`${BASE_URL}/users/me`, getAuthHeader());
-      return me.data;
+
+      try {
+        const me = await axios.get(`${BASE_URL}/users/me`, getAuthHeader());
+        return me.data;
+      } catch (meError) {
+        console.warn("Could not fetch user data:", meError);
+        // Return basic user info from registration response
+        return { id: response.data.user?.id, ...response.data.user };
+      }
     } catch (error) {
       throw new Error(error.response?.data?.error || "Registration failed");
     }
@@ -42,15 +70,29 @@ export const registerUser = createAsyncThunk(
 );
 
 // Login user
+// Login user
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async (userData) => {
     try {
-      const response = await axios.post(`${BASE_URL}/auth/login`, userData);
+      const response = await axios.post(`${BASE_URL}/auth/login`, userData, {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        withCredentials: false, // Add this line
+      });
       const { token } = response.data;
       localStorage.setItem("authToken", token);
-      const me = await axios.get(`${BASE_URL}/users/me`, getAuthHeader());
-      return me.data;
+      
+      try {
+        const me = await axios.get(`${BASE_URL}/users/me`, getAuthHeader());
+        return me.data;
+      } catch (meError) {
+        console.warn("Could not fetch user data:", meError);
+        // Return basic user info from login response
+        return { id: response.data.user?.id, ...response.data.user };
+      }
     } catch (error) {
       throw new Error(error.response?.data?.error || "Login failed");
     }

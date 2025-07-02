@@ -69,8 +69,8 @@ function CreatePostPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!createPostForm.text.trim()) return;
-const imageUrl = publicId ? cld.image(publicId).toURL() : "";
-    dispatch(createPost({ text: createPostForm.text, image: imageUrl }))
+    const imageUrl = publicId ? cld.image(publicId).toURL() : "";
+    dispatch(createPost({ text: createPostForm.text, imageUrl }))
       .unwrap()
       .then(() => {
         dispatch(resetCreatePostForm());
