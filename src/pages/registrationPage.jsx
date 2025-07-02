@@ -1,4 +1,3 @@
-// import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDispatch, useSelector } from "react-redux";
@@ -57,7 +56,7 @@ const RegistrationPage = () => {
             <input
               type="text"
               id="name"
-              placeholder="Username"
+              placeholder="name"
               {...register("name")}
               className="mt-1 block w-full border border-gray-300 rounded-md p-2"
             />

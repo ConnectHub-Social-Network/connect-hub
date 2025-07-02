@@ -8,9 +8,30 @@ const getAuthHeader = () => {
   return {
     headers: {
       Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
     },
   };
 };
+
+// For requests without auth (like register/login)
+const getPublicHeader = () => {
+  return {
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+  };
+};
+// Helper function to get the authorization header
+// const getAuthHeader = () => {
+//   const token = localStorage.getItem("authToken");
+//   return {
+//     headers: {
+//       Authorization: `Bearer ${token}`,
+//     },
+//   };
+// };
 
 //Check authentication status
 export const checkAuthStatus = createAsyncThunk(
@@ -30,7 +51,9 @@ export const registerUser = createAsyncThunk(
   "auth/registerUser",
   async (userData) => {
     try {
-      const response = await axios.post(`${BASE_URL}/auth/register`, userData);
+      console.log("USERDATA", userData)
+      const response = await axios.post(`${BASE_URL}/auth/register`, userData, getPublicHeader());
+      console.log("response",response)
       const { token } = response.data;
       localStorage.setItem("authToken", token);
       const me = await axios.get(`${BASE_URL}/users/me`, getAuthHeader());

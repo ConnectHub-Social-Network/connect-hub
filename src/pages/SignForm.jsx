@@ -37,11 +37,12 @@ const SigninForm = () => {
 
   return (
     <div className="flex flex-col space-y-5 min-h-screen justify-center items-center bg-gray-100">
-      <div>
-        <h1 className="bg-blue-600 text-white w-32 py-2 text-center font-bold rounded">
+      <div className="mb-2">
+        <h1 className="bg-blue-600 text-white text-center font-bold w-8 h-8 m-auto shadow-md rounded">c</h1>
+        <h1 className=" text-black w-32 py-2 text-center font-bold rounded m-auto">
           ConnectHub
         </h1>
-        <p className="mt-2 text-center">Welcome back! Sign in to continue</p>
+        <p className="mt-2 text-center ">Welcome back! Sign in to continue</p>
       </div>
 
       {error && (
