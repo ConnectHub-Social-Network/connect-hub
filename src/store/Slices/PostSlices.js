@@ -4,7 +4,17 @@ import { BASE_URL } from "../baseUrl";
 
 
 axios.defaults.withCredentials = true;
-
+const getAuthHeader = () => {
+  const token = localStorage.getItem("authToken");
+  return {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    withCredentials: false,
+  };
+};
 // fetch posts + fetch user info for each post
 export const fetchPostsWithUsers = createAsyncThunk(
   "posts/fetchPostsWithUsers",
@@ -13,11 +23,7 @@ export const fetchPostsWithUsers = createAsyncThunk(
       const token = localStorage.getItem("authToken");
 
       // Fetch posts feed
-      const postsResponse = await axios.get(`${BASE_URL}/posts/feed`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const postsResponse = await axios.get(`${BASE_URL}/posts/feed`, getAuthHeader());
       //console.log("postsResponse.data", postsResponse.data);
 
       const posts = postsResponse.data;
@@ -28,9 +34,7 @@ export const fetchPostsWithUsers = createAsyncThunk(
       // Fetch each user's info concurrently
       const userRequests = userIds.map((id) =>
         axios
-          .get(`${BASE_URL}/users/${id}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          })
+          .get(`${BASE_URL}/users/${id}`, getAuthHeader())
           .then((res) => res.data)
       );
 
@@ -62,19 +66,17 @@ export const createPost = createAsyncThunk(
   "posts/createPost",
   async (postData, thunkAPI) => {
     try {
+      
       const token = localStorage.getItem("authToken");
-
-      const formData = new FormData();
-      formData.append("text", postData.text);
-      if (postData.image) {
-        formData.append("image", postData.image);
+      if (!token) {
+        throw new Error("No authentication token found");
       }
-      const response = await axios.post(`${BASE_URL}/posts`,  formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-         
-        },
-      });
+      const requestData = {
+        text: postData.text,
+        ...(postData.imageUrl && { image_url: postData.imageUrl }),
+      };
+      const response = await axios.post(`${BASE_URL}/posts`,  requestData,  getAuthHeader());
+
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
