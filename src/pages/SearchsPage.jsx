@@ -1,11 +1,12 @@
 
 import Sidebar from "../components/layout/Sidebar";
+import Footer from "../components/layout/Footer";
 
 function SearchPage() {
   
 
   return (
-     <div className="flex flex-row mt-10">
+     <div className="flex flex-row mt-10 md:ml-48">
       <Sidebar />
     <div className="max-w-md mx-auto p-4">
       <h2 className="text-xl font-bold mb-4">Search Users</h2>
@@ -26,6 +27,9 @@ function SearchPage() {
 
 
     </div>
+      <div className="flex-grow"></div>
+      {/* Footer is only visible on mobile devices */}
+      <Footer />
     </div>
   );
 }
