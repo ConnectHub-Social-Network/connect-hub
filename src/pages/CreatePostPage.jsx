@@ -1,4 +1,5 @@
  //import React, { useState } from "react";
+
 import { useDispatch, useSelector } from "react-redux";
 import {
   updatePostText,
@@ -13,6 +14,7 @@ import UploadImages from "./UploadImages";
 import CloudinaryUploadWidget from '../components/cloudinaryUploadWidget';
 import { AdvancedImage, responsive, placeholder } from '@cloudinary/react';
 import { Cloudinary } from '@cloudinary/url-gen';
+import Footer from "../components/layout/Footer";
 
 function CreatePostPage() {
 
@@ -82,7 +84,7 @@ function CreatePostPage() {
   };
 
   return (
-    <div className="flex flex-row mt-10">
+    <div className="flex flex-row mt-10 md:ml-48 ">
       <Sidebar />
       
       <div className="max-w-xl mx-auto p-4 w-full">
@@ -161,6 +163,9 @@ function CreatePostPage() {
           />
         </div>
       )}
+      <div className="flex-grow"></div>
+      {/* Footer is only visible on mobile devices */}
+      <Footer />
     </div>
   );
 }

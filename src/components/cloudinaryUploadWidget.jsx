@@ -1,4 +1,6 @@
 import { useEffect, useRef } from "react";
+import { FaCamera } from "react-icons/fa";
+
 
 const CloudinaryUploadWidget = ({ uwConfig, setPublicId, setUploadResult }) => {
   const uploadWidgetRef = useRef(null);
@@ -43,9 +45,10 @@ const CloudinaryUploadWidget = ({ uwConfig, setPublicId, setUploadResult }) => {
     <button
       ref={uploadButtonRef}
       id="upload_widget"
-      className="cloudinary-button"
+      className="cloudinary-button flex items-center gap-2 text-sm text-white hover:text-gray-200"
+      
     >
-      Upload
+      <FaCamera className="text-lg" />
     </button>
   );
 };
