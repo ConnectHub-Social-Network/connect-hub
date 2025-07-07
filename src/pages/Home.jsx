@@ -3,17 +3,20 @@ import { useSelector, useDispatch } from "react-redux";
 import PostCard from "../components/posts/Postcard";
 import { fetchPostsWithUsers } from "../store/Slices/PostSlices";
 import Sidebar from "../components/layout/Sidebar"; 
+import {checkAuthStatus} from "../store/Slices/AuthSlices"
 
 const HomePage = () => {
   const dispatch = useDispatch();
 
-  const user = useSelector((state) => state.auth.user);
+  const  {user} = useSelector((state) => state.auth);
+  console.log("USER", user)
   const { posts, status, error } = useSelector((state) => state.posts);
   
 
   useEffect(() => {
     if (status === "idle") {
       dispatch(fetchPostsWithUsers());
+      dispatch(checkAuthStatus());
     }
   }, [status, dispatch]);
 
@@ -23,9 +26,10 @@ const loggedInUserId = user?._id || user?.id;
 const userPostCount = posts.filter((p) => p.user?.id === loggedInUserId).length;
   // Total posts in the feed
   const feedPostCount = posts.length;
+  console.log("posts",posts)
 
   return (
-    <div className="flex flex-row mt-10">
+    <div className="flex flex-row mt-10 ml-20">
       <Sidebar />
 
       <main className="flex flex-col items-center mx-10 w-full max-w-4xl ">
@@ -39,7 +43,7 @@ const userPostCount = posts.filter((p) => p.user?.id === loggedInUserId).length;
 
         <section className="grid grid-cols-3 gap-6 w-full mb-8">
           <div className="bg-white p-6 rounded-lg shadow text-center">
-            <p className="text-2xl font-bold">{userPostCount}</p>
+            <p className="text-2xl font-bold"> {userPostCount}</p>
             <p>Your Posts</p>
           </div>
           <div className="bg-white p-6 rounded-lg shadow text-center">

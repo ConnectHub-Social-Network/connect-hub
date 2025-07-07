@@ -69,7 +69,7 @@ export const registerUser = createAsyncThunk(
   }
 );
 
-// Login user
+
 // Login user
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
@@ -87,7 +87,9 @@ export const loginUser = createAsyncThunk(
       
       try {
         const me = await axios.get(`${BASE_URL}/users/me`, getAuthHeader());
+        console.log("ME",me)
         return me.data;
+        
       } catch (meError) {
         console.warn("Could not fetch user data:", meError);
         // Return basic user info from login response
@@ -163,6 +165,7 @@ const authSlice = createSlice({
         state.status = "succeeded";
         state.isAuthenticated = true;
         state.user = action.payload;
+        console.log("action.payload",action.payload)
         state.error = null;
       })
       .addCase(loginUser.rejected, (state, action) => {

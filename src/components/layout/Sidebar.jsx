@@ -33,6 +33,7 @@ const Sidebar = () => {
         <User />
         <span>Profile</span>
       </Link>
+      
     </nav>
   );
 };

@@ -82,7 +82,7 @@ function CreatePostPage() {
   };
 
   return (
-    <div className="flex flex-row mt-10">
+    <div className="flex flex-row mt-10 ml-20">
       <Sidebar />
       
       <div className="max-w-xl mx-auto p-4 w-full">

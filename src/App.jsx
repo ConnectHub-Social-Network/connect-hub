@@ -16,6 +16,8 @@ import Header from "./components/layout/Header.jsx";
 import { checkAuthStatus } from "./store/Slices/AuthSlices";
 
 
+
+
 function App() {
   const dispatch = useDispatch();
   
@@ -93,6 +95,10 @@ function App() {
           >
           
           </Route>
+
+          
+
+          
         </Routes>
       </main>
     </div>

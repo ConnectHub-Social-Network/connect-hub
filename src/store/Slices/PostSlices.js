@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { BASE_URL } from "../baseUrl";
+import { Users } from "lucide-react";
 
 
 axios.defaults.withCredentials = true;
@@ -27,7 +28,7 @@ export const fetchPostsWithUsers = createAsyncThunk(
       //console.log("postsResponse.data", postsResponse.data);
 
       const posts = postsResponse.data;
-
+console.log("postslice",posts)
       // Extract unique userIds from posts
       const userIds = [...new Set(posts.map((post) => post.userId))];
 
@@ -39,19 +40,19 @@ export const fetchPostsWithUsers = createAsyncThunk(
       );
 
       const users = await Promise.all(userRequests);
-
+console.log("userslice",users)
       // Create a map userId => user
       const userMap = {};
       users.forEach((user) => {
         userMap[user.id] = user;
       });
-
+console.log("usermappp",userMap.undefined)
       // Attach user info to each post
       const postsWithUsers = posts.map((post) => ({
         ...post,
-        user: userMap[post.userId] || { name: "User Not Found" }
+        user: userMap.undefined || { name: "User Not Found" }
       }));
-
+      
       return postsWithUsers;
     } catch (error) {
       return thunkAPI.rejectWithValue(
