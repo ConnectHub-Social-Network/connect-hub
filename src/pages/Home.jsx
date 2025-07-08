@@ -1,12 +1,11 @@
 import React, { useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import PostCard from "../components/posts/Postcard";
+
 import { fetchPostsWithUsers,fetchComments } from "../store/Slices/PostSlices";
 import { fetchConnections } from "../store/Slices/AuthSlices";
 import Sidebar from "../components/layout/Sidebar";
 import Footer from "../components/layout/Footer"
-import { checkAuthStatus } from "../store/Slices/AuthSlices";
-
 
 const HomePage = () => {
   const dispatch = useDispatch();
@@ -53,10 +52,12 @@ const HomePage = () => {
 
 const userPostCount = posts.filter((p) => p.user?.id === loggedInUserId).length;
   // Total posts in the feed
+
   const feedPostCount = filteredPosts.length;
 
   return (
-    <div className="flex ">
+    <div className="flex">
+
       <Sidebar />
 
       <main className="flex flex-col w-full md:ml-48 px-20 py-8 max-w-7xl mx-auto mb-8 ">

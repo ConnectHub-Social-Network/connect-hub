@@ -9,7 +9,8 @@ const Header = () => {
   return (
     <header className="flex justify-between items-center bg-white shadow-md fixed w-full p-4 z-10">
       {/* Logo */}
-      <div className="flex items-center gap-2 ml-20">
+
+      <div className="flex items-center gap-2">
         <div className="bg-blue-600 text-white w-8 h-8 flex items-center justify-center font-bold rounded ">
           C
         </div>

@@ -94,17 +94,21 @@ export const loginUser = createAsyncThunk(
       );
       const { token, user } = response.data;
       localStorage.setItem("authToken", token);
+
       
-      try {
-        const me = await axios.get(`${BASE_URL}/users/me`, getAuthHeader());
-        console.log("ME",me)
-        return me.data;
+//       try {
+//         const me = await axios.get(`${BASE_URL}/users/me`, getAuthHeader());
+//         console.log("ME",me)
+//         return me.data;
         
-      } catch (meError) {
-        console.warn("Could not fetch user data:", meError);
-        // Return basic user info from login response
-        return { id: response.data.user?.id, ...response.data.user };
-      }
+//       } catch (meError) {
+//         console.warn("Could not fetch user data:", meError);
+//         // Return basic user info from login response
+//         return { id: response.data.user?.id, ...response.data.user };
+//       }
+
+      return user
+     
     } catch (error) {
       throw new Error(error.response?.data?.error || "Login failed");
     }
@@ -122,7 +126,7 @@ export const fetchConnections = createAsyncThunk(
     try {
       const [followingRes, followersRes] = await Promise.all([
         axios.get(`${BASE_URL}/users/${userId}/following`, getAuthHeader()),
-        axios.get(`${BASE_URL}/users/${userId}/followers`, getAuthHeader()), // If exists
+        axios.get(`${BASE_URL}/users/${userId}/followers`, getAuthHeader()), 
       ]);
 
       return {
