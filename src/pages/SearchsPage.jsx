@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import Sidebar from "../components/layout/Sidebar";
+
 import axios from "axios";
 import { BASE_URL } from "../store/baseUrl";
 import fallbackImage from "../public/fallback.png";
-
-
+import Footer from "../components/layout/Footer";
 
 
 function SearchPage() {
@@ -69,6 +69,7 @@ function SearchPage() {
  }
 
   return (
+
     <div className="flex flex-row mt-10 ml-20 ">
       <Sidebar/>
     <div className="p-6 w-full max-w-6xl mx-auto">
@@ -93,6 +94,7 @@ function SearchPage() {
               </div>
             </div>
             {user.is_following && !chechflowing ?  (
+
             <button
             onClick={()=>unFollow(user.id)}
              
@@ -119,6 +121,9 @@ function SearchPage() {
         ))}
       </div>
     </div>
+      <div className="flex-grow"></div>
+      {/* Footer is only visible on mobile devices */}
+      <Footer />
     </div>
   );
 };
