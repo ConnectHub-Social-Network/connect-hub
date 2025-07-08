@@ -1,16 +1,17 @@
 import React, { useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import PostCard from "../components/posts/Postcard";
+
 import { fetchPostsWithUsers,fetchComments } from "../store/Slices/PostSlices";
 import { fetchConnections } from "../store/Slices/AuthSlices";
 import Sidebar from "../components/layout/Sidebar";
 import Footer from "../components/layout/Footer"
 
-
 const HomePage = () => {
   const dispatch = useDispatch();
 
-  const user = useSelector((state) => state.auth.user);
+  const  {user} = useSelector((state) => state.auth);
+  console.log("USER", user)
   const { posts, status, error } = useSelector((state) => state.posts);
 
   const loggedInUserId = user?._id || user?.id;
@@ -33,6 +34,7 @@ const HomePage = () => {
   }
     if (status === "idle") {
       dispatch(fetchPostsWithUsers());
+      dispatch(checkAuthStatus());
     }
   }, [status, dispatch]);
 
@@ -50,10 +52,12 @@ const HomePage = () => {
 
 const userPostCount = posts.filter((p) => p.user?.id === loggedInUserId).length;
   // Total posts in the feed
+
   const feedPostCount = filteredPosts.length;
 
   return (
     <div className="flex">
+
       <Sidebar />
 
       <main className="flex flex-col w-full md:ml-48 px-4 py-8 max-w-7xl mx-auto mb-8">
@@ -67,7 +71,7 @@ const userPostCount = posts.filter((p) => p.user?.id === loggedInUserId).length;
 
         <section className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-6 w-full mb-8">
           <div className="bg-white p-6 rounded-lg shadow text-center">
-            <p className="text-2xl font-bold">{userPostCount}</p>
+            <p className="text-2xl font-bold"> {userPostCount}</p>
             <p>Your Posts</p>
           </div>
           <div className="bg-white p-6 rounded-lg shadow text-center">

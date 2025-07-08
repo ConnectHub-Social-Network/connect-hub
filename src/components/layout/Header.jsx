@@ -9,6 +9,7 @@ const Header = () => {
   return (
     <header className="flex justify-between items-center bg-white shadow-md fixed w-full p-4 z-10">
       {/* Logo */}
+
       <div className="flex items-center gap-2">
         <div className="bg-blue-600 text-white w-8 h-8 flex items-center justify-center font-bold rounded ">
           C
@@ -20,6 +21,7 @@ const Header = () => {
       {/* User Info & Logout */}
       {isAuthenticated && (
         <div className="flex items-center space-x-3 text-gray-700 font-semibold">
+          
           {/* User name */}
           <img
           src={user?.avatarUrl || "/default-avatar.png"}

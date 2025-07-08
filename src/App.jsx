@@ -17,6 +17,8 @@ import AboutPage from "./pages/AboutPage.jsx"
 import { checkAuthStatus } from "./store/Slices/AuthSlices";
 
 
+
+
 function App() {
   const dispatch = useDispatch();
   
@@ -96,6 +98,10 @@ function App() {
 
           
           </Route>
+
+          
+
+          
         </Routes>
       </main>
     </div>

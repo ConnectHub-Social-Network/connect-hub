@@ -38,6 +38,7 @@ const Sidebar = () => {
         <Info />
         <span>About</span>
       </Link>  
+
     </nav>
   );
 };

@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { BASE_URL } from "../baseUrl";
+import { Users } from "lucide-react";
 
 
 //axios.defaults.withCredentials = true;
@@ -20,10 +21,47 @@ export const fetchPostsWithUsers = createAsyncThunk(
   "posts/fetchPostsWithUsers",
   async (_, thunkAPI) => {
     try {
+// <<<<<<< shamsudin-dahir
+//       const token = localStorage.getItem("authToken");
+
+//       // Fetch posts feed
+//       const postsResponse = await axios.get(`${BASE_URL}/posts/feed`, getAuthHeader());
+//       //console.log("postsResponse.data", postsResponse.data);
+
+//       const posts = postsResponse.data;
+// console.log("postslice",posts)
+//       // Extract unique userIds from posts
+//       const userIds = [...new Set(posts.map((post) => post.userId))];
+
+//       // Fetch each user's info concurrently
+//       const userRequests = userIds.map((id) =>
+//         axios
+//           .get(`${BASE_URL}/users/${id}`, getAuthHeader())
+//           .then((res) => res.data)
+//       );
+
+//       const users = await Promise.all(userRequests);
+// console.log("userslice",users)
+//       // Create a map userId => user
+//       const userMap = {};
+//       users.forEach((user) => {
+//         userMap[user.id] = user;
+//       });
+// console.log("usermappp",userMap.undefined)
+//       // Attach user info to each post
+//       const postsWithUsers = posts.map((post) => ({
+//         ...post,
+//         user: userMap.undefined || { name: "User Not Found" }
+//       }));
+      
+//       return postsWithUsers;
+//     } catch (error) {
+// =======
       const res = await axios.get(`${BASE_URL}/posts`);
       
       return res.data;
     } catch (err) {
+
       return thunkAPI.rejectWithValue(
         err.response?.data?.error || "Failed to fetch posts"
       );
