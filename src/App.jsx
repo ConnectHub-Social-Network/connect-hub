@@ -12,6 +12,7 @@ import NotificationPage from "./pages/NotificationsPage.jsx";
 import SearchPage from "./pages/SearchsPage.jsx";
 import ProfilePage from "./pages/ProfilePage.jsx";
 import Header from "./components/layout/Header.jsx";
+import AboutPage from "./pages/AboutPage.jsx"
 
 import { checkAuthStatus } from "./store/Slices/AuthSlices";
 
@@ -92,9 +93,19 @@ function App() {
                 <Signin />
               </ProtectedRoutes>
             }
-          >
+          />
+            
+
+       <Route
+            path="/about"
+            element={
+              <ProtectedRoutes requireAuth={false}>
+                <AboutPage />
+              </ProtectedRoutes>
+            }
+          />
           
-          </Route>
+          
 
           
 

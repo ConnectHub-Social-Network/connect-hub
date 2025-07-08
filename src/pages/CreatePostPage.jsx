@@ -1,8 +1,9 @@
  //import React, { useState } from "react";
+
 import { useDispatch, useSelector } from "react-redux";
 import {
   updatePostText,
-  updatePostImage,
+  // updatePostImage,
   resetCreatePostForm,
   createPost,
 } from "../store/Slices/PostSlices";
@@ -13,13 +14,14 @@ import UploadImages from "./UploadImages";
 import CloudinaryUploadWidget from '../components/cloudinaryUploadWidget';
 import { AdvancedImage, responsive, placeholder } from '@cloudinary/react';
 import { Cloudinary } from '@cloudinary/url-gen';
+import Footer from "../components/layout/Footer";
 
 function CreatePostPage() {
 
   const dispatch = useDispatch();
   const { status, error, createPostForm } = useSelector((state) => state.posts);
   const user = useSelector((state) => state.auth.userInfo);
-  const [imageFile, setImageFile] = useState(null);
+  // const [imageFile, setImageFile] = useState(null);
   const [Preview, setImagePreview] = useState(null);
 
   const charLimit = 280;
@@ -56,14 +58,14 @@ function CreatePostPage() {
   
 
   // Handle image input change
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  // const handleImageChange = (e) => {
+  //   const file = e.target.files[0];
+  //   if (!file) return;
 
-    setImageFile(file);
-    setImagePreview(URL.createObjectURL(file));
+  //   setImageFile(file);
+  //   setImagePreview(URL.createObjectURL(file));
     
-  };
+  // };
 
   // Handle form submit
   const handleSubmit = (e) => {
@@ -83,6 +85,7 @@ function CreatePostPage() {
 
   return (
     <div className="flex flex-row mt-10 ml-20">
+    <div className="flex flex-row mt-10 md:ml-48 ">
       <Sidebar />
       
       <div className="max-w-xl mx-auto p-4 w-full">
@@ -161,6 +164,10 @@ function CreatePostPage() {
           />
         </div>
       )}
+      <div className="flex-grow"></div>
+      {/* Footer is only visible on mobile devices */}
+      <Footer />
+    </div>
     </div>
   );
 }

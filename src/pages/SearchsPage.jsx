@@ -49,7 +49,7 @@ function SearchPage() {
   } )
   .then(Response => setCheckFlowing(true) )
    
-   
+  
  
   .catch(err => console.error("API err;",err))
  }
@@ -69,9 +69,9 @@ function SearchPage() {
  }
 
   return (
-    <div className="flex flex-row mt-10 ml-20 ">
+    <div className="flex flex-row mt-10 ml-40 ">
       <Sidebar/>
-    <div className="p-6 w-full max-w-6xl mx-auto">
+    <div className="p-6 w-full max-w-6xl mx-auto ml-20">
       
 <h2 className="text-2xl font-semibold mb-4">Discover People</h2>
       <input

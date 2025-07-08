@@ -1,4 +1,8 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import {
+  createSlice,
+  createAsyncThunk,
+  createSelector,
+} from "@reduxjs/toolkit";
 import axios from "axios";
 import { BASE_URL } from "../baseUrl";
 
@@ -30,7 +34,10 @@ export const checkAuthStatus = createAsyncThunk(
   "auth/checkAuthStatus",
   async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/users/me`, getAuthHeader());
+      const response = await axios.get(
+        `${BASE_URL}/users/me`,
+        getAuthHeader()
+      );
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.error || "Unauthorized");
@@ -44,25 +51,23 @@ export const registerUser = createAsyncThunk(
   async (userData) => {
     try {
       console.log("USERDATA", userData);
-      const response = await axios.post(`${BASE_URL}/auth/register`, userData, {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        withCredentials: false,
-      });
+      const response = await axios.post(
+        `${BASE_URL}/auth/register`,
+        userData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          
+        }
+      );
       console.log("response", response);
-      const { token } = response.data;
+      const { token, user} = response.data;
       localStorage.setItem("authToken", token);
+      return user
 
-      try {
-        const me = await axios.get(`${BASE_URL}/users/me`, getAuthHeader());
-        return me.data;
-      } catch (meError) {
-        console.warn("Could not fetch user data:", meError);
-        // Return basic user info from registration response
-        return { id: response.data.user?.id, ...response.data.user };
-      }
+     
     } catch (error) {
       throw new Error(error.response?.data?.error || "Registration failed");
     }
@@ -70,19 +75,24 @@ export const registerUser = createAsyncThunk(
 );
 
 
+
 // Login user
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async (userData) => {
     try {
-      const response = await axios.post(`${BASE_URL}/auth/login`, userData, {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        withCredentials: false, // Add this line
-      });
-      const { token } = response.data;
+      const response = await axios.post(
+        `${BASE_URL}/auth/login`,
+        userData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          
+        }
+      );
+      const { token, user } = response.data;
       localStorage.setItem("authToken", token);
       
       try {
@@ -106,11 +116,34 @@ const logoutUser = createAsyncThunk("auth/logoutUser", async () => {
   localStorage.removeItem("authToken");
 });
 
+export const fetchConnections = createAsyncThunk(
+  "auth/fetchConnections",
+  async (userId, thunkAPI) => {
+    try {
+      const [followingRes, followersRes] = await Promise.all([
+        axios.get(`${BASE_URL}/users/${userId}/following`, getAuthHeader()),
+        axios.get(`${BASE_URL}/users/${userId}/followers`, getAuthHeader()), // If exists
+      ]);
+
+      return {
+        following: followingRes.data.map((u) => u.id),
+        followers: followersRes.data.map((u) => u.id),
+      };
+    } catch (err) {
+      return thunkAPI.rejectWithValue(
+        err.response?.data?.error || "Failed to fetch connections"
+      );
+    }
+  }
+);
+
+
 const initialState = {
   isAuthenticated: !!localStorage.getItem("authToken"),
   user: null,
   status: "idle",
   error: null,
+  //profileUser: null, 
 };
 
 const authSlice = createSlice({
@@ -178,8 +211,17 @@ const authSlice = createSlice({
         state.status = "idle";
         state.isAuthenticated = false;
         state.user = null;
+        // state.profileUser = null;
         state.error = null;
+      }) 
+      .addCase(fetchConnections.fulfilled, (state, action) => {
+        state.followingIds = action.payload.following;
+        state.followerIds = action.payload.followers;
       });
+    
+
+      
+      
   },
 });
 
