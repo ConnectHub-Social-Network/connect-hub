@@ -85,7 +85,7 @@ function CreatePostPage() {
 
   return (
 
-    <div className="flex flex-row mt-10 md:ml-48 ">
+    <div className="flex flex-row mt-10 md:ml-48 max-w-7xl ">
 
       <Sidebar />
       

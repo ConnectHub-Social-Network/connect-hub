@@ -70,9 +70,9 @@ function SearchPage() {
 
   return (
 
-    <div className="flex flex-row mt-10 ml-20 ">
+    <div className="flex flex-col lg:flex-row w-full ">
       <Sidebar/>
-    <div className="p-6 w-full max-w-6xl mx-auto">
+    <div className=" w-full max-w-6xl px-6 py-10 mx-auto lg:ml-48">
       
 <h2 className="text-2xl font-semibold mb-4">Discover People</h2>
       <input

@@ -142,7 +142,7 @@ const profileSlice = createSlice({
         })
         .addCase(fetchUserProfile.fulfilled, (state, action) => {
           state.status = "succeeded";
-          state.profile = action.payload;
+          state.profileUser = action.payload;
           state.error = null;
         })
         .addCase(fetchUserProfile.rejected, (state, action) => {
@@ -155,7 +155,7 @@ const profileSlice = createSlice({
         })
         .addCase(updateUserProfile.fulfilled, (state, action) => {
           state.status = "succeeded";
-          state.profile = action.payload;
+          state.myProfile = action.payload;
           state.error = null;
         })
         .addCase(updateUserProfile.rejected, (state, action) => {
