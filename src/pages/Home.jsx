@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import PostCard from "../components/posts/Postcard";
 
 import { fetchPostsWithUsers,fetchComments } from "../store/Slices/PostSlices";
-import { fetchConnections } from "../store/Slices/AuthSlices";
+import { fetchConnections, checkAuthStatus } from "../store/Slices/AuthSlices";
 import Sidebar from "../components/layout/Sidebar";
 import Footer from "../components/layout/Footer"
 
@@ -11,7 +11,7 @@ const HomePage = () => {
   const dispatch = useDispatch();
 
   const  {user} = useSelector((state) => state.auth);
-  console.log("USER", user)
+  // console.log("USER", user)
   const { posts, status, error } = useSelector((state) => state.posts);
 
   const loggedInUserId = user?._id || user?.id;
@@ -43,7 +43,11 @@ const HomePage = () => {
 
   const visibleUserIds = new Set([loggedInUserId, ...followingIds, ...followerIds]);
 
-  const filteredPosts = posts .filter((post) => visibleUserIds.has(post.user?.id))
+  const filteredPosts = posts
+  .filter((post) => {
+    const postUserId = post.user?.id || post.user?._id || post.userId;
+    return visibleUserIds.has(postUserId);
+  })
   .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   
@@ -54,7 +58,6 @@ const userPostCount = posts.filter((p) => p.user?.id === loggedInUserId).length;
   // Total posts in the feed
 
   const feedPostCount = filteredPosts.length;
-
   return (
     <div className="flex">
 
@@ -74,10 +77,10 @@ const userPostCount = posts.filter((p) => p.user?.id === loggedInUserId).length;
             <p className="text-2xl font-bold"> {userPostCount}</p>
             <p>Your Posts</p>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow text-center">
-            <p className="text-2xl font-bold"></p> 
+          {/* <div className="bg-white p-6 rounded-lg shadow text-center">
+              <p className="text-2xl font-bold">{user.followingCount}</p>  
             <p>Following</p>
-          </div>
+          </div> */}
           <div className="bg-white p-6 rounded-lg shadow text-center">
             <p className="text-2xl font-bold">{feedPostCount}</p>
             <p>Feed Posts</p>

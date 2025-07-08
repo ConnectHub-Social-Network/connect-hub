@@ -94,18 +94,6 @@ export const loginUser = createAsyncThunk(
       const { token, user } = response.data;
       localStorage.setItem("authToken", token);
 
-      
-//       try {
-//         const me = await axios.get(`${BASE_URL}/users/me`, getAuthHeader());
-//         console.log("ME",me)
-//         return me.data;
-        
-//       } catch (meError) {
-//         console.warn("Could not fetch user data:", meError);
-//         // Return basic user info from login response
-//         return { id: response.data.user?.id, ...response.data.user };
-//       }
-
       return user
      
     } catch (error) {
@@ -124,14 +112,16 @@ export const fetchConnections = createAsyncThunk(
   async (userId, thunkAPI) => {
     try {
       const [followingRes, followersRes] = await Promise.all([
-        axios.get(`${BASE_URL}/users/${userId}/following`, getAuthHeader()),
-        axios.get(`${BASE_URL}/users/${userId}/followers`, getAuthHeader()), 
+        axios.get(`${BASE_URL}/users/me/following`, getAuthHeader()),
+        axios.get(`${BASE_URL}/users/me/followers`, getAuthHeader()), 
       ]);
-
+      console.log("Raw following:", followingRes.data);
       return {
         following: followingRes.data.map((u) => u.id),
         followers: followersRes.data.map((u) => u.id),
       };
+      
+
     } catch (err) {
       return thunkAPI.rejectWithValue(
         err.response?.data?.error || "Failed to fetch connections"

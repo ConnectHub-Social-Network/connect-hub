@@ -63,6 +63,7 @@ function NotificationsPage() {
       <Footer />
 
     </div>
+    </div>
   );
 }
 

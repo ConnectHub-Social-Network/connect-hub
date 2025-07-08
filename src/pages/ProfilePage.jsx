@@ -90,9 +90,7 @@ const ProfilePage = () => {
   }
 
   return (
-
     <div className="flex flex-col lg:flex-row w-full">
-
       <Sidebar />
      <main className="w-full px-4 py-8 max-w-7xl mx-auto lg:ml-48">
         {/* Header */}
